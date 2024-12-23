@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cricket Game</title>
+  <style>
+    body {
+      text-align: center;
+    }
+    table {
+      margin: auto;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bat Ball Stump Game</h1>
+  <p>
+    <strong>Game Rules:</strong><br>
+    1. Choose either Bat, Ball, or Stump.<br>
+    2. The computer will also randomly choose one of the three.<br>
+    3. The winner is determined as follows:<br>
+    &nbsp;&nbsp;a. Bat vs Ball: User wins.<br>
+    &nbsp;&nbsp;b. Ball vs Stump: User wins.<br>
+    &nbsp;&nbsp;c. Stump vs Bat: User wins.<br>
+    &nbsp;&nbsp;d. Bat vs Stump: Computer wins.<br>
+    &nbsp;&nbsp;e. Stump vs Ball: Computer wins.<br>
+    &nbsp;&nbsp;f. Ball vs Bat: Computer wins.<br>
+    &nbsp;&nbsp;g. Same choices result in a tie.<br>
+  </p>
+  <button onclick="
+    let computerChoice = generateComputerChoice();
+    let resultMsg = getResult('Bat', computerChoice);
+    showResult('Bat', computerChoice, resultMsg);
+  ">Bat</button>
+
+  <button onclick="
+    let computerChoice = generateComputerChoice();
+    let resultMsg = getResult('Ball', computerChoice);
+    showResult('Ball', computerChoice, resultMsg);
+  ">Ball</button>
+
+  <button onclick="
+    let computerChoice = generateComputerChoice();
+    let resultMsg = getResult('Stump', computerChoice);
+    showResult('Stump', computerChoice, resultMsg);
+  ">Stump</button>
+
+  <!-- Table for scores and current moves -->
+  <table>
+    <thead>
+      <tr>
+        <th>Wins</th>
+        <th>Losses</th>
+        <th>Ties</th>
+        <th>User Move</th>
+        <th>Computer Move</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="winCount">0</td>
+        <td id="loseCount">0</td>
+        <td id="tieCount">0</td>
+        <td id="userMove">-</td>
+        <td id="computerMove">-</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Separate table for choice history -->
+  <table>
+    <thead>
+      <tr>
+        <th>Round</th>
+        <th>User Move</th>
+        <th>Computer Move</th>
+      </tr>
+    </thead>
+    <tbody id="historyTableBody">
+    </tbody>
+  </table>
+
+  <script>
+    let score = {
+      win: 0,
+      lost: 0,
+      tie: 0,
+      history: [],
+      displayScore: function () {
+        return `No of matches Won: ${score.win}, Lost: ${score.lost}, Tie: ${score.tie}`;
+      },
+      updateTable: function (userMove, computerMove) {
+        document.getElementById('winCount').textContent = score.win;
+        document.getElementById('loseCount').textContent = score.lost;
+        document.getElementById('tieCount').textContent = score.tie;
+        document.getElementById('userMove').textContent = userMove;
+        document.getElementById('computerMove').textContent = computerMove;
+
+        // Update the history table
+        score.history.push({ userMove, computerMove });
+        let historyTableBody = document.getElementById('historyTableBody');
+        historyTableBody.innerHTML = ''; // Clear existing rows
+
+        score.history.forEach((entry, index) => {
+          let row = historyTableBody.insertRow();
+          let cell1 = row.insertCell(0);
+          let cell2 = row.insertCell(1);
+          let cell3 = row.insertCell(2);
+          cell1.textContent = index + 1;
+          cell2.textContent = entry.userMove;
+          cell3.textContent = entry.computerMove;
+        });
+      }
+    };
+
+    function generateComputerChoice() {
+      let randomNumber = Math.random() * 3;
+      if (randomNumber > 0 && randomNumber <= 1) {
+        return "Bat";
+      } else if (randomNumber > 1 && randomNumber <= 2) {
+        return "Ball";
+      } else {
+        return "Stump";
+      }
+    }
+
+    function getResult(userMove, computerMove) {
+      if (userMove === "Bat") {
+        if (computerMove === "Ball") {
+          score.win++;
+          return "User won.";
+        } else if (computerMove === "Bat") {
+          score.tie++;
+          return `It's a tie`;
+        } else {
+          score.lost++;
+          return "Computer has won";
+        }
+      } else if (userMove === "Ball") {
+        if (computerMove === "Ball") {
+          score.tie++;
+          return `It's a tie`;
+        } else if (computerMove === "Bat") {
+          score.lost++;
+          return "Computer has won";
+        } else {
+          score.win++;
+          return "User won.";
+        }
+      } else {
+        if (computerMove === "Ball") {
+          score.lost++;
+          return "Computer has won";
+        } else if (computerMove === "Bat") {
+          score.win++;
+          return "User won.";
+        } else {
+          score.tie++;
+          return `It's a tie`;
+        }
+      }
+    }
+
+    function showResult(userMove, computerMove, result) {
+      alert(`You have chosen ${userMove}. Computer choice is ${computerMove}
+      ${result}
+      ${score.displayScore()}`);
+
+      score.updateTable(userMove, computerMove);
+    }
+  </script>
+</body>
+</html>
